@@ -1,0 +1,27 @@
+const mongoose = require('mongoose'),
+  Schema = mongoose.Schema;
+
+/**
+ * Programme Exception Schema
+ */
+const programmeExceptionSchema = new Schema({
+  owner: {
+    type: String,
+    required: [true, "station owner id not provided"]
+  },
+  programme: {
+    type: String,
+    required: [true, "station name not provided"]
+  },
+  programmeParent: {
+    type: String
+  },
+  originalDate: {
+    type: Date
+  },
+  date: {
+    type: Date
+  }
+});
+
+module.exports = mongoose.model('ProgrammeParent', programmeExceptionSchema);
