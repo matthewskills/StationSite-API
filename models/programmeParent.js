@@ -13,15 +13,28 @@ const programmeParentSchema = new Schema({
     type: String,
     required: [true, "station name not provided"]
   },
-  rule: {
+  freq: {
     type: String,
-    enum: ["weekly","monthly"],
+    enum: ["daily","weekly","monthly"],
     required: [true, "Please specify a frequency"]
   },
-  exceptions: {
+  interval: {
+    type: Number,
+    required: [true, "Please provide an interval"]
+  },
+  days: {
+    type: [Number]
+  },
+  start: {
+    type: Number
+  },
+  end: {
+    type: Number
+  },
+  programmeStart: {
     type: String
   },
-  cancelations: {
+  programmeEnd: {
     type: String
   }
 });

@@ -4,6 +4,7 @@ const express = require('express')
     , bcrypt = require("bcrypt")
     , Station = require("../models/station")
     , Programme = require("../models/programme")
+    , ProgrammeParent = require("../models/programmeParent")
     , jwt = require("jsonwebtoken")
     ;
 
@@ -58,7 +59,7 @@ stationRouter.put('/:stationId', verifyToken, async (req, res) => {
 });
 
 stationRouter.get('/:stationId/programmes', async (req, res) => {
-    if (!req.station) {
+    if (!req.station ) {
         res.status(404).json({ error: "Station not found" });
     } else {
         Programme.find({ owner: req.station._id.toString() }).select('_id name description artwork1 artwork2').exec().then((programmes) => {
@@ -68,6 +69,47 @@ stationRouter.get('/:stationId/programmes', async (req, res) => {
         });
     }
 });
+
+stationRouter.post('/:stationId/schedule', verifyToken, async (req, res) => {
+    if (!req.user || req.station.owner !== req.user._id.toString()) {
+        res.status(403).json({ error: 'Authentication Failed' });
+    }
+
+    if (!req.station) {
+        res.status(404).json({ error: "Station not found" });
+    } else {
+        const programmeParent =  new ProgrammeParent({
+            owner: req.station._id.toString(),
+            programme: req.body.programme,
+            freq: req.body.frequency,
+            interval: req.body.interval,
+            days: req.body.days,
+            start: req.body.start,
+            end: req.body.end,
+            programmeStart: req.body.programmeStart,
+            programmeEnd: req.body.programmeEnd
+        });
+
+        await programmeParent.save().then(() => {
+            res.status(201).json({ station: station, success: 'Programme scheduled successfully' });
+        }).catch((err) => {
+            res.status(400).json({ error: `Could not schedule the programme with information provided (${err.code})` });
+        });
+    }
+});
+
+stationRouter.get('/:stationId/schedule', async (req, res) => {
+    if (!req.station) {
+        res.status(404).json({ error: "Station not found" });
+    } else {
+        ProgrammeParent.find({ owner: req.station._id.toString() }).exec().then((schedule) => {
+            res.status(200).json({ schedule: schedule });
+        }).catch((err) => {
+            res.status(404).json({ error: "Schedule not found" });
+        });
+    }
+});
+
 
 stationRouter.post('/register', verifyToken, async (req, res) => {
     if (!req.user) {
