@@ -83,15 +83,15 @@ stationRouter.post('/:stationId/schedule', verifyToken, async (req, res) => {
             programme: req.body.programme,
             freq: req.body.frequency,
             interval: req.body.interval,
-            days: req.body.days,
+            days: req.body.days.split(','),
             start: req.body.start,
             end: req.body.end,
             programmeStart: req.body.programmeStart,
             programmeEnd: req.body.programmeEnd
         });
 
-        await programmeParent.save().then(() => {
-            res.status(201).json({ station: station, success: 'Programme scheduled successfully' });
+        await programmeParent.save().then((programme_parent) => {
+            res.status(201).json({ programme_parent: programme_parent, success: 'Programme scheduled successfully' });
         }).catch((err) => {
             res.status(400).json({ error: `Could not schedule the programme with information provided (${err.code})` });
         });
