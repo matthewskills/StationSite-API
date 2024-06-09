@@ -1,6 +1,9 @@
 
 const fs = require('fs')
-    , https = require('https')
+//    , https = require('https')
+    , http = require('http')
+    , hostname = process.env.HOSTNAME
+    , port = process.env.PORT
     , express = require('express')
     , mongoose = require('mongoose')
     , userRouter = require("./routes/user")
@@ -11,16 +14,17 @@ const fs = require('fs')
     , cors = require('cors')
     , dotenv = require('dotenv')
     , app = express()
+    , httpServer = http.createServer(app)
     ;
 
 dotenv.config();
 
-const ssl_privateKey = fs.readFileSync(process.env.SSL_PRIVATEKEY_PATH, 'utf8')
-    , ssl_certificate = fs.readFileSync(process.env.SSL_CERTIFICATE_PATH, 'utf8')
-    , ssl_chain = fs.readFileSync(process.env.SSL_CHAIN_PATH, 'utf8')
-    , ssl_credentials = { key: ssl_privateKey, cert: ssl_certificate, ca: ssl_chain}
-    , httpsServer = https.createServer(ssl_credentials, app)
-    ;
+//const ssl_privateKey = fs.readFileSync(process.env.SSL_PRIVATEKEY_PATH, 'utf8')
+//    , ssl_certificate = fs.readFileSync(process.env.SSL_CERTIFICATE_PATH, 'utf8')
+//    , ssl_chain = fs.readFileSync(process.env.SSL_CHAIN_PATH, 'utf8')
+//    , ssl_credentials = { key: ssl_privateKey, cert: ssl_certificate, ca: ssl_chain}
+//    , httpsServer = https.createServer(ssl_credentials, app)
+//    ;
 
 app.use(cors());
 app.use(bodyParser.json({limit: '50mb'}));
@@ -41,6 +45,11 @@ process.on('unhandledRejection', error => {
 });
 
 
-httpsServer.listen(443, () => {
-	console.log('HTTPS Server running on port 443');
+//httpsServer.listen(443, () => {
+//	console.log('HTTPS Server running on port 443');
+//});
+
+
+httpServer.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
 });
